@@ -1,0 +1,13 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Tomato
+Comment=Pomodoro technique
+TryExec=/opt/pomodoro/start.sh
+Exec=/opt/pomodoro/start.sh
+Icon=/opt/pomodoro/tomato.png
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;
+Keywords=Tomato;Pomodoro;
+StartupWMClass=Tomato
