@@ -23,12 +23,13 @@ pause_interval:int = 4 # minutes
 minutes_passed: int = focus_interval
 seconds_passed: int = 60 # seconds
 paused:bool = False
+switched:bool = False
 
 
 def toggle_bg():
-	global r, background, label, button, timer
+	global r, background, label, button, timer, paused, switched
 
-	if paused:
+	if paused or switched:
 		r["bg"] = "green"
 		label["bg"] = "green"
 		button["bg"] = "green"
@@ -56,23 +57,12 @@ def toggle_pause():
 	toggle_bg()
 
 
-def send_notification():
-	global paused
+def toggle_switched():
+	global switched, label_text, button_text
 
-	if paused:
-		Popen(
-			"notify-send 'Stop, take a break!'", 
-			stdin=PIPE, 
-			stdout=PIPE, 
-			stderr=PIPE
-		)
-	else:
-		Popen(
-			"notify-send 'Time is up, folk! Get back to work!'", 
-			stdin=PIPE, 
-			stdout=PIPE, 
-			stderr=PIPE
-		)
+	switched = not switched
+
+	toggle_bg()
 
 
 def win():
@@ -111,31 +101,38 @@ def win():
 
 
 def pomodoro():
-	global r, minutes_passed, seconds_passed, paused, timer_text
+	global r, minutes_passed, seconds_passed, paused, timer_text, switched
 
 	while True:
 		if r is not None:
-			if paused:
-				toggle_bg()
-			else:
+			if not paused:
 				seconds_passed -= 1
 
-				s = seconds_passed
+			m = minutes_passed
+			s = seconds_passed
 
-				if seconds_passed <= 0:
-					minutes_passed -= 1
-					seconds_passed = 59
+			if minutes_passed < 10:
+					m = f"0{minutes_passed}"
 
-				if seconds_passed < 10:
+			if seconds_passed < 10:
 					s = f"0{seconds_passed}"
 
-				timer_text.set(f"{minutes_passed}:{s}")
-				
-				if minutes_passed <= 0:
-					minutes_passed = float(pause_interval)
-					toggle_pause()
-					send_notification()
+			timer_text.set(f"{m}:{s}")
+
+			if minutes_passed == 0 and seconds_passed <= 0:
 				toggle_bg()
+				toggle_switched()
+
+				if not switched:
+					minutes_passed = focus_interval
+				else:
+					minutes_passed = pause_interval	
+				seconds_passed = 59
+
+			if seconds_passed <= 0:
+				if minutes_passed > 0:
+					minutes_passed -= 1
+				seconds_passed = 59
 
 			sleep(1) # seconds
 
