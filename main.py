@@ -4,6 +4,7 @@ from window import *
 from thread_maid import ThreadMaid
 from time import sleep
 from subprocess import Popen, PIPE
+from PIL import ImageTk
 
 window_thread = ThreadMaid()
 pomodoro_thread = ThreadMaid()
@@ -30,15 +31,22 @@ def toggle_bg():
 	global r, background, label, button, timer, paused, switched
 
 	if paused or switched:
-		r["bg"] = "green"
-		label["bg"] = "green"
-		button["bg"] = "green"
-		timer["bg"] = "green"
+		fg = "white"
+		bg = "green"
 	else:
-		r["bg"] = "orange"
-		label["bg"] = "orange"
-		button["bg"] = "orange"
-		timer["bg"] = "orange"
+		fg = "black"
+		bg = "orange"
+
+	r["bg"] = bg
+
+	label["fg"] = fg
+	label["bg"] = bg
+
+	button["fg"] = fg
+	button["bg"] = bg
+
+	timer["fg"] = fg
+	timer["bg"] = bg
 
 
 def toggle_pause():
@@ -70,8 +78,7 @@ def win():
 
 	w = Window(
 		window_name="Pomodoro",
-		window_size="200x100",
-		window_icon="./tomato.png"
+		window_size="200x100"
 	)
 	r = w.get_root()
 
@@ -112,10 +119,10 @@ def pomodoro():
 			s = seconds_passed
 
 			if minutes_passed < 10:
-					m = f"0{minutes_passed}"
+				m = f"0{minutes_passed}"
 
 			if seconds_passed < 10:
-					s = f"0{seconds_passed}"
+				s = f"0{seconds_passed}"
 
 			timer_text.set(f"{m}:{s}")
 
